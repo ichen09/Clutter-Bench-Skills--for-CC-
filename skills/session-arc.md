@@ -1,85 +1,29 @@
-# /session-arc — Autonomous improvement cycle chaining 5 skills
+# /session-arc — One improvement cycle, start to finish
 
-Run the full session improvement loop: detect drift → fix it → review the fix → verify nothing broke → commit. Chains `/eye` → `/improve` → `/code-review` → `/health` → commit.
+Detect drift → fix it → review → verify → commit. Chains `/eye` → `/improve` → code review → health check → commit.
 
 ## Steps
 
-### 1. Run `/eye`
+1. **Run `/eye`.** Zero findings at severity >=7? Stand down.
 
-```bash
-python3 scripts/2026-04-17_1330_stale-scan.py --all-eyes --json | python3 -m scripts.eye.rank --json-stdin --render
-```
+2. **Tone check.** Grep tracking docs for L-026 forbidden words. Fix overcertainty before anything else — it actively misleads cold readers.
 
-If zero findings at severity ≥7: stand down. Report "nothing worth fixing" and stop.
+3. **Run `/improve`** on the top finding. Pick what would most mislead a future session. Don't open a PR — the arc continues.
 
-### 2. Run `/tone-audit`
+4. **Review the diff.** `git diff HEAD~1`. Fix any bugs before continuing.
 
-Scan all tracking docs for L-026 forbidden words BEFORE doing any other work. If overcertain instances exist from prior sessions, fix them first — they're higher priority than eye findings because they actively mislead cold readers.
+5. **Re-check tone** on touched files only. Don't introduce new overcertainty while fixing drift.
 
-### 3. Run `/improve` on the top finding
+6. **Health check.** `python3 scripts/2026-04-17_1330_stale-scan.py`. Did the fix increase staleness? Fix the chain.
 
-From eye output OR tone-audit output, pick the finding that would most mislead a future session's decision. Prefer:
-- Claims that would change what a future session builds (over cosmetic metadata)
-- Contradictions between files a session actually reads (STATUS, MEMORY, lessons) over files it skips
-- Overcertain language on unreplicated results (over frontmatter mismatches)
+7. **Commit.** Cite the finding, the fix, and the health delta.
 
-Follow the `/improve` skill steps: pick → hypothesize → verify → fix → encode lesson if pattern.
+8. **Loop or stop.** Running under `/loop`? Schedule next cycle. Otherwise wait for Isaac.
 
-Do NOT open a PR — the arc continues.
+## Tone rule
 
-### 4. Run `/code-review` on the fix
+Every claim in commits and reports uses the L-026 template: `[Observation] (N=<count>, <conditions>): <what happened>`. No "confirmed," "headline," "publishable."
 
-```bash
-git diff HEAD~1
-```
+## When
 
-Review the diff. If any CONFIRMED bugs found, fix them before continuing.
-
-### 5. Run `/tone-audit` again on touched files
-
-Re-scan only the files modified in this arc. If any new overcertain language was introduced by the fix itself, correct it before committing.
-
-### 6. Run `/health` to verify nothing broke
-
-```bash
-python3 scripts/2026-04-17_1330_stale-scan.py
-```
-
-Compare stale count before vs after. If the fix increased staleness, fix the chain.
-
-### 7. Commit and report
-
-Commit with a message citing the eye finding, the fix, and the code-review/health results.
-
-Report to Isaac:
-```
-/session-arc complete:
-  Finding: [SEV N] category: path:line
-  Fix: <what changed>
-  Code review: <N findings, M fixed>
-  Health delta: <stale count before → after>
-  Commit: <sha>
-```
-
-### 8. Loop decision
-
-If Isaac said `/loop /session-arc`: call ScheduleWakeup with 1800s delay and re-enter.
-Otherwise: stop and wait for Isaac.
-
-## Tone discipline
-
-Every claim in the commit message and report uses the L-026 tracking-doc template:
-`[Observation] (N=<count>, <conditions>): <what happened>`
-
-No "confirmed," "headline," "publishable," "the paper." Numbers only.
-
-## When to use
-
-- At session start after `/catch-up`, to run one improvement cycle
-- Composed with `/loop` for autonomous improvement: `/loop 30m /session-arc`
-- When Isaac says "improve something" without specifying what
-
-## What this is NOT
-
-- Not a substitute for directed work. If Isaac has a specific task, do that instead.
-- Not unlimited. One cycle per invocation. `/loop` handles repetition.
+After `/boot`, to run one improvement cycle. With `/loop 30m /session-arc` for autonomous runs. When Isaac says "improve something" without specifying what. Not a substitute for directed work.

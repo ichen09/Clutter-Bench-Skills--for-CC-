@@ -1,62 +1,47 @@
-# /boot — Session start (combines catch-up + saturate + health + tone-audit)
+# /boot — Session start
 
-One command to start a session. Replaces the 4-command sequence of /catch-up → /saturate → /health → /tone-audit.
+One command to orient. Read the minimum files, check health, report what's next.
 
 ## Steps
 
-### Phase 1 — Orient (what /catch-up did)
+### 1. Orient
 
-Read these files in order, extract the "where we are" from each:
-1. `purpose.md` — why this project exists (30 seconds)
-2. `MEMORY.md` — latest state block (what was done last)
-3. `emotions/.internal/STATUS.md` — current bench status
-4. `emotions/tasks/lessons.md` — L-019+ (recent lessons, scan last 10)
-5. `corrections-log.md` — any recent corrections
+Read in order:
+1. `purpose.md` — why this project exists
+2. `MEMORY.md` (auto-memory) — durable architecture only, NOT current state
+3. `emotions/.internal/STATUS.md` — current state, authoritative (`fresh_as_of`-governed)
+4. `emotions/tasks/lessons.md` — last 10 lessons
+5. `corrections-log.md` — recent corrections. Cite >=1 relevant C-NNN or say "none apply."
+
+**Staleness cross-check (auto-memory loads before this skill and rots):** compare auto-memory's stated date against `STATUS.md`'s `fresh_as_of`. If auto-memory is older, **trust STATUS.md** for current state and flag the gap in the output. Auto-memory is durable architecture; STATUS.md is what's actually happening.
 
 Output: 3-sentence orientation. What the project is, where we left off, what's next.
 
-### Phase 2 — Load (what /saturate did, but targeted)
+### 2. Load
 
-Read the task workspace index for the most recent task:
 ```bash
 ls -t emotions/tasks/ | head -5
 ```
-Read that workspace's `index.md`. Read the most recent session log. Read the most recent intake note.
 
-Do NOT read all 10,226 files. Read the 5-8 files that tell you what happened last session and what's queued.
+Read that workspace's `index.md` + most recent intake note. 5-8 files max, not the whole repo.
 
-### Phase 3 — Check (what /health did, but useful)
+### 3. Health
 
-Run the stale scanner but ONLY report:
-- Files that changed since last session AND have stale deps (actually broken, not cosmetically stale)
-- Invalid deps (broken references — these are real bugs)
+Run `python emotions/bench/scripts/doc_health.py` if in emotions mode. Only report actually-broken stuff. Skip cosmetic counts.
 
-Skip: unmanaged count (meaningless), exempt count (irrelevant), total stale count (misleading).
+### 4. Tone
 
-### Phase 4 — Tone check (what /tone-audit did)
-
-Run the forbidden-word grep but ONLY on files modified since last session. Don't audit the whole repo — audit what's fresh.
+Grep for L-026 forbidden words in files modified since last session. Don't audit the whole repo.
 
 ### Output
 
 ```
 SESSION BOOT — [date]
 Orientation: [3 sentences]
-Last session: [workspace name] — [1-sentence summary]
-Queued: [next actions from last workspace]
-Health: [N actually-broken files] [N invalid deps]
-Tone: [N overcertain instances in recent files]
+Last session: [workspace] — [1-sentence summary]
+Queued: [next actions]
+Memory: [auto-memory date vs STATUS fresh_as_of — "aligned" or "STALE by N days, trusting STATUS"]
+Health: [N broken files] [N invalid deps]
+Tone: [N overcertain instances]
 Ready.
 ```
-
-## What this replaces
-
-- `/catch-up` (1,528 words of skill definition for "read 7 files")
-- `/saturate` (1,131 words for "read everything" — too broad)
-- `/health` (reports 2,536 unmanaged files nobody cares about)
-- `/tone-audit` on its own (useful but should be scoped to recent work)
-
-## What this is NOT
-
-- Not a full context load. A session that needs deep history reads specific files.
-- Not a substitute for Isaac saying what to work on. This orients; Isaac directs.
