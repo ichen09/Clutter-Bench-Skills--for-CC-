@@ -4,6 +4,14 @@ A set of [Claude Code](https://claude.com/claude-code) slash-command skills extr
 
 These skills encode a self-improving, drift-resistant agent workflow: orient at session start, detect cross-file drift, run autonomous improvement arcs, stress-test a system from many angles, capture context, and publish results. They're shared here as reference patterns for anyone building agentic harnesses on top of Claude Code.
 
+## Live showcase
+
+A single self-contained page on the process & craft behind this framework — written from the project's own brainstorms and operating docs:
+
+**→ https://ichen09.github.io/Clutter-Bench-Skills-/**
+
+(Source: [`docs/index.html`](docs/index.html) — no build step, no dependencies; open it directly in any browser.)
+
 > **Note:** Each skill is a `.md` command file dropped into `.claude/commands/`. They reference project-internal scripts and paths (e.g. `emotions/bench/scripts/doc_health.py`, `me.md`, `STATUS.md`), so they are published as *patterns to study and adapt*, not as a drop-in package. Adapt the paths to your own repo.
 
 ## The skills
