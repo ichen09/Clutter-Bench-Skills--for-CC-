@@ -8,7 +8,7 @@ These skills encode a self-improving, drift-resistant agent workflow: orient at 
 
 A single self-contained page on the process & craft behind this framework — written from the project's own brainstorms and operating docs:
 
-**→ https://ichen09.github.io/Clutter-Bench-Skills-/**
+**→ https://ichen09.github.io/Clutter-Bench-Skills--for-CC-/**
 
 (Source: [`docs/index.html`](docs/index.html) — no build step, no dependencies; open it directly in any browser.)
 
